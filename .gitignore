@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+firebase_key.json
+uploads/
+test.jpg
+.DS_Store
