@@ -16,9 +16,9 @@ MAX_IMAGE_MB = 5
 # Cloudinary (ENV-based)
 # =========================
 cloudinary.config(
-    cloud_name=os.environ["dkeemuyc5"],
-    api_key=os.environ["618542112391133"],
-    api_secret=os.environ["ayZ_faPMSKAMgnp9N01FN7b0sBs"],
+    cloud_name=os.environ["CLOUDINARY_CLOUD_NAME"],
+    api_key=os.environ["CLOUDINARY_API_KEY"],
+    api_secret=os.environ["CLOUDINARY_API_SECRET"],
     secure=True
 )
 
