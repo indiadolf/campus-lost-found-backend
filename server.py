@@ -38,12 +38,13 @@ db = firestore.client()
 # Flask App
 # =========================
 app = Flask(__name__)
+from flask_cors import CORS
+
 CORS(
     app,
-    resources={r"/*": {"origins": [
-        "https://earnest-mandazi-5925e2.netlify.app"
-    ]}},
-    supports_credentials=True
+    resources={r"/*": {"origins": "*"}},
+    allow_headers=["Content-Type"],
+    methods=["GET", "POST", "DELETE", "OPTIONS"]
 )
 print("SERVER RUNNING")
 
