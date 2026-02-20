@@ -4,7 +4,7 @@ from firebase_admin import credentials, firestore
 from flask_cors import CORS
 import cloudinary
 import cloudinary.uploader
-import os,json
+import os, json
 from datetime import datetime, timedelta
 
 
@@ -12,23 +12,35 @@ ADMINS = ["f20250692@pilani.bits-pilani.ac.in"]
 MAX_IMAGE_MB = 5
 
 
+# =========================
+# Cloudinary (ENV-based)
+# =========================
 cloudinary.config(
-    cloud_name="dkeemuyc5",
-    api_key="618542112391133",
-    api_secret="ayZ_faPMSKAMgnp9N01FN7b0sBs",
+    cloud_name=os.environ["CLOUDINARY_CLOUD_NAME"],
+    api_key=os.environ["CLOUDINARY_API_KEY"],
+    api_secret=os.environ["CLOUDINARY_API_SECRET"],
     secure=True
 )
 
 
-firebase_json = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT"])
-cred = credentials.Certificate(firebase_json)
-firebase_admin.initialize_app(cred)
+# =========================
+# Firebase (Render-safe)
+# =========================
+if not firebase_admin._apps:
+    firebase_json = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT"])
+    cred = credentials.Certificate(firebase_json)
+    firebase_admin.initialize_app(cred)
+
 db = firestore.client()
 
 
+# =========================
+# Flask App
+# =========================
 app = Flask(__name__)
 CORS(app)
 print("SERVER RUNNING")
+
 
 def too_soon_to_post(email):
     docs = db.collection("items").where("postedBy", "==", email).stream()
@@ -54,6 +66,7 @@ def create_notification(to_email, item_id, item_title):
         "read": False,
         "createdAtEpoch": int(datetime.utcnow().timestamp())
     })
+
 
 @app.route("/items", methods=["GET"])
 def get_items():
@@ -117,6 +130,7 @@ def delete_item(item_id):
 
     db.collection("items").document(item_id).delete()
     return {"status": "deleted"}, 200
+
 
 @app.route("/items/<item_id>/replies", methods=["POST"])
 def add_reply(item_id):
@@ -198,8 +212,6 @@ def mark_notification_read(notif_id):
     db.collection("notifications").document(notif_id).update({"read": True})
     return {"status": "ok"}, 200
 
-
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5002))
