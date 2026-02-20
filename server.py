@@ -38,7 +38,13 @@ db = firestore.client()
 # Flask App
 # =========================
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    resources={r"/*": {"origins": [
+        "https://earnest-mandazi-5925e2.netlify.app"
+    ]}},
+    supports_credentials=True
+)
 print("SERVER RUNNING")
 
 
@@ -173,12 +179,13 @@ def get_replies(item_id):
     )
     return jsonify([{**d.to_dict(), "id": d.id} for d in docs])
 
-
+@app.route("/upload", methods=["POST", "OPTIONS"])
 @app.route("/upload", methods=["POST"])
 def upload_image():
     if "image" not in request.files:
         return {"error": "No image"}, 400
-
+    if request.method == "OPTIONS":
+        return "", 204
     img = request.files["image"]
     img.seek(0, 2)
 
