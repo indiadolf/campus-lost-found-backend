@@ -4,6 +4,7 @@ from firebase_admin import credentials, firestore
 from flask_cors import CORS
 import cloudinary
 import cloudinary.uploader
+import os,json
 from datetime import datetime, timedelta
 
 
@@ -19,7 +20,8 @@ cloudinary.config(
 )
 
 
-cred = credentials.Certificate("firebase_key.json")
+firebase_json = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT"])
+cred = credentials.Certificate(firebase_json)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
